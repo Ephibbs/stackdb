@@ -209,8 +209,20 @@ library = Library("my_lib", dimension=384, index_type="lsh", index_params={
   docker run -p 8000:8000 vector-db
   ```
 
+### Technical Choices
+
+1. Three main models: Library, Document, Chunk
+Each object keeps track of its own information and id. Libraries keep track of documents and docuemtns track chunks both with a dictionary by key id
+2. Index class abstraction:
+To promote modularity and extensibility, I added a BaseIndex class abstraction that can be subclassed to create variations of indexes for use in libraries.
+3. Persistence through write ahead logs and automated snapshots:
+Changes are saved to a buffered WAL in memory and synced to disk on an interval or when there are many changes. Snapshots are also saved periodically at a less frequent interval. This allows the db to restart and recover data on failures.
+I assign a durable variable a sequence id to link snapshots with WAL logs and recover using both.
+4. The API creates CRUD endpoints for each of the models.
+
 ### Limitations & Future Work
 
 1. Implement Cosine K Means for IVF index for a precise implementation
 2. Create a snapshot of the index itself to avoid rebuilding on startup
 3. Create an abstract class for DistanceMetric and use in all Index classes, add euclidean, cosine
+4. The WAL could push to a Kafka service for performance and data replication if extended to a cluster
