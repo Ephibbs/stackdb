@@ -1,0 +1,13 @@
+# Testing framework
+pytest>=6.0.0
+pytest-timeout>=2.0.0
+pytest-mock>=3.0.0
+pytest-cov>=4.0.0
+
+# Test utilities
+requests>=2.25.0
+numpy>=1.20.0
+
+# Development and debugging
+pytest-xdist>=2.5.0  # For parallel test execution
+pytest-html>=3.1.0   # For HTML test reports 
