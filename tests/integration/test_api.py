@@ -3,7 +3,7 @@ import requests
 import time
 
 
-API_BASE_URL = "http://localhost:3000"
+API_BASE_URL = "http://localhost:8000"
 
 
 @pytest.fixture(scope="session")
