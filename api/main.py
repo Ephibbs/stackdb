@@ -17,11 +17,13 @@ app = FastAPI(
     version="0.0.1",
 )
 
+
 @app.on_event("startup")
 async def startup_event():
     global libraries, storage_path
     if storage_path:
         libraries.update(load_libraries(storage_path))
+
 
 @app.get("/")
 async def root():
@@ -30,15 +32,18 @@ async def root():
         "total_libraries": len(libraries),
     }
 
+
 app.include_router(library_crud.router)
 app.include_router(document_crud.router)
 app.include_router(chunk_crud.router)
+
 
 @app.post("/libraries/{library_id}/search", response_model=List[SearchResult])
 def search_library(library_id: str, search_query: SearchQuery):
     library = get_library_object(library_id)
     results = get_search_results(library, search_query)
     return results
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Hierarchical Vector Database API")

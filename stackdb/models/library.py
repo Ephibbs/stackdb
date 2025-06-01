@@ -35,10 +35,12 @@ def persistence_logger(operation: str) -> Callable:
 
     return decorator
 
+
 class LibraryUpdate(BaseModel):
     id: str = Field(min_length=1)
     name: Optional[str] = Field(None, min_length=1)
     metadata: Optional[Dict] = Field(None)
+
 
 class Library(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -244,7 +246,9 @@ class Library(BaseModel):
                 del self.documents[document.id]
         self.index.remove_vectors(chunk_ids)
 
-    def get_chunks(self, id: Optional[str] = None, filter: Optional[Dict] = None) -> List[Chunk]:
+    def get_chunks(
+        self, id: Optional[str] = None, filter: Optional[Dict] = None
+    ) -> List[Chunk]:
         if id is not None:
             return [self.index.chunks.get(id, None)]
         if filter is None:

@@ -7,6 +7,7 @@ from stackdb.models import DocumentUpdate
 
 router = APIRouter(prefix="/libraries/{library_id}/documents")
 
+
 @router.post("")
 def create_documents(library_id: str, documents: List[DocumentCreate]):
     library = get_library_object(library_id)
@@ -16,6 +17,7 @@ def create_documents(library_id: str, documents: List[DocumentCreate]):
         success=True,
         message=f"Documents created successfully",
     )
+
 
 @router.get("")
 def list_documents(
@@ -29,11 +31,10 @@ def list_documents(
 
     results = []
     for document in documents[skip : skip + limit]:
-        results.append(
-            get_document_response(document)
-        )
+        results.append(get_document_response(document))
 
     return results
+
 
 @router.get("/{document_id}")
 def get_document(library_id: str, document_id: str):
@@ -41,10 +42,9 @@ def get_document(library_id: str, document_id: str):
     document = library.get_documents([document_id])[0]
     return get_document_response(document)
 
+
 @router.patch("/{document_id}")
-def update_document(
-    library_id: str, document_id: str, update_data: DocumentUpdate
-):
+def update_document(library_id: str, document_id: str, update_data: DocumentUpdate):
     library = get_library_object(library_id)
     library.update_document(document_id, update_data)
     return BaseResponse(
@@ -52,6 +52,7 @@ def update_document(
         success=True,
         message=f"Document {document_id} updated successfully",
     )
+
 
 @router.delete("/{document_id}")
 def delete_document(library_id: str, document_id: str):

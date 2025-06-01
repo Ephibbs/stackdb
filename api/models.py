@@ -44,6 +44,7 @@ class DocumentResponse(BaseModel):
     chunk_count: int
     created_at: str
 
+
 # Chunk endpoints
 class ChunkCreate(BaseModel):
     id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -60,6 +61,7 @@ class PartialChunkResponse(BaseModel):
     metadata: Optional[Dict] = Field(None)
     document_id: Optional[str] = Field(None)
     created_at: Optional[datetime] = Field(None)
+
 
 # Search types
 class SearchQuery(BaseModel):

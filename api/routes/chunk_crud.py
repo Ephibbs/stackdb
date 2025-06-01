@@ -7,6 +7,7 @@ from fastapi import HTTPException, status
 
 router = APIRouter(prefix="/libraries/{library_id}/chunks")
 
+
 @router.post("")
 def create_chunks(library_id: str, chunks: List[ChunkCreate]):
     library = get_library_object(library_id)
@@ -16,6 +17,7 @@ def create_chunks(library_id: str, chunks: List[ChunkCreate]):
         success=True,
         message=f"Chunks created successfully",
     )
+
 
 @router.get("")
 def list_chunks(
@@ -28,13 +30,17 @@ def list_chunks(
     chunks = library.get_chunks(filter)
     return chunks[skip : skip + limit]
 
+
 @router.get("/{chunk_id}")
 def get_chunk(library_id: str, chunk_id: str):
     library = get_library_object(library_id)
     chunk = library.get_chunks(id=chunk_id)[0]
     if chunk is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Chunk not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Chunk not found"
+        )
     return chunk
+
 
 @router.patch("")
 def update_chunks(library_id: str, update_data: List[ChunkUpdate]):
@@ -45,6 +51,7 @@ def update_chunks(library_id: str, update_data: List[ChunkUpdate]):
         success=True,
         message=f"Chunks updated successfully",
     )
+
 
 @router.delete("/{chunk_id}")
 def delete_chunks(library_id: str, chunk_ids: List[str]):

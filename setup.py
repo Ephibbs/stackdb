@@ -14,13 +14,13 @@ setup(
     python_requires=">=3.12",
     install_requires=[
         "numpy>=1.24.3",
-        "pydantic>=2.5.0",
+        "pydantic>=2.11.5",
         "scikit-learn>=1.3.2",
     ],
     extras_require={
         "dev": [
             "pytest>=6.0.0",
-            "black>=24.0.0",
+            "black>=25.1.0",
             "flake8>=6.0.0",
             "mypy>=1.15.0",
         ],

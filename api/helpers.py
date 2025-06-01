@@ -1,4 +1,10 @@
-from api.models import SearchResult, PartialChunkResponse, SearchQuery, LibraryResponse, DocumentResponse
+from api.models import (
+    SearchResult,
+    PartialChunkResponse,
+    SearchQuery,
+    LibraryResponse,
+    DocumentResponse,
+)
 from stackdb.models import Library, Document
 from typing import List, Dict
 from stackdb.indexes import get_index
@@ -11,7 +17,7 @@ def create_library_object(library_data: LibraryCreate, storage_path: str) -> Lib
     if storage_path:
         library_storage_path = Path(storage_path) / "libraries" / library_data.id
         library_storage_path.mkdir(parents=True, exist_ok=True)
-    
+
     library = Library(
         id=library_data.id,
         name=library_data.name,
@@ -24,23 +30,24 @@ def create_library_object(library_data: LibraryCreate, storage_path: str) -> Lib
     )
     return library
 
+
 def get_library_responses(libraries: Dict[str, Library]) -> List[LibraryResponse]:
     results = []
     for library in libraries.values():
-        results.append(
-            get_library_response(library)
-        )
+        results.append(get_library_response(library))
     return results
+
 
 def get_library_response(library: Library) -> LibraryResponse:
     return LibraryResponse(
-                id=library.id,
-                name=library.name,
-                metadata=library.metadata,
-                index_information=library.index.get_information(),
-                document_ids=list(library.documents.keys()),
-                created_at=library.created_at.isoformat(),
-            )
+        id=library.id,
+        name=library.name,
+        metadata=library.metadata,
+        index_information=library.index.get_information(),
+        document_ids=list(library.documents.keys()),
+        created_at=library.created_at.isoformat(),
+    )
+
 
 def get_document_response(document: Document) -> DocumentResponse:
     return DocumentResponse(
@@ -53,7 +60,9 @@ def get_document_response(document: Document) -> DocumentResponse:
     )
 
 
-def get_search_results(library: Library, search_query: SearchQuery) -> List[SearchResult]:
+def get_search_results(
+    library: Library, search_query: SearchQuery
+) -> List[SearchResult]:
     search_results = library.search_chunks(
         query=search_query.query,
         k=search_query.k,

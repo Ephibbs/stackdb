@@ -16,6 +16,7 @@ class DocumentUpdate(BaseModel):
     title: Optional[str] = Field(None)
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
 
+
 class Document(BaseModel):
     id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()))
     title: str = Field(min_length=1)
