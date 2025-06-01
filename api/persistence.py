@@ -2,6 +2,16 @@ from typing import Dict
 from pathlib import Path
 import json
 from stackdb.models import Library
+from fastapi import HTTPException, status
+from typing import Optional
+
+storage_path: Optional[str] = None
+libraries: Dict[str, Library] = {}
+
+def get_library_object(library_id: str) -> Library:
+    if library_id not in libraries:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Library not found")
+    return libraries[library_id]
 
 def save_libraries(libraries: Dict[str, Library], storage_path: str) -> None:
     storage_dir = Path(storage_path)
