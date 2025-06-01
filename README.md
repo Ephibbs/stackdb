@@ -22,12 +22,6 @@ An in-memory vector database built with FastAPI that provides similarity search 
 Install StackDB as a Python package:
 
 ```bash
-# Install core package
-pip install stackdb
-
-# Install with development dependencies
-pip install stackdb[dev]
-
 # Install from source
 git clone https://github.com/ephibbs/stackdb.git
 cd stackdb
@@ -160,7 +154,7 @@ library = Library("my_lib", dimension=384, index_type="lsh", index_params={
 ### Chunk Management
 
 - **POST /libraries/{library_id}/chunks** - Create chunks in a library
-  - Body: Array of `ChunkCreate` objects
+  - Body: Array of `Chunk` objects
   - Returns: Success message
 
 - **GET /libraries/{library_id}/chunks** - List chunks in a library

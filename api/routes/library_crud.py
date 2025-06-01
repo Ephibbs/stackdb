@@ -1,10 +1,11 @@
 from fastapi import APIRouter, HTTPException, status
-from api.models import LibraryCreate, LibraryUpdate, BaseResponse
+from api.models import LibraryCreate, BaseResponse
 from api.helpers import (
     create_library_object,
     get_library_responses,
     get_library_response,
 )
+from stackdb.models import LibraryUpdate
 from api.persistence import save_libraries, libraries, storage_path, get_library_object
 
 router = APIRouter(prefix="/libraries")

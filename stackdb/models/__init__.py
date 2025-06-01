@@ -8,7 +8,14 @@ This package contains the hierarchical models for the vector database:
 """
 
 from .chunk import Chunk, ChunkUpdate
-from .document import Document
-from .library import Library
+from .document import Document, DocumentUpdate
+from .library import Library, LibraryUpdate
 
-__all__ = ["Chunk", "ChunkUpdate", "Document", "Library"]
+__all__ = [
+    "Chunk",
+    "ChunkUpdate",
+    "Document",
+    "DocumentUpdate",
+    "Library",
+    "LibraryUpdate",
+]

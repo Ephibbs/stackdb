@@ -1,15 +1,15 @@
 from fastapi import APIRouter, Query
-from api.models import ChunkCreate, BaseResponse
+from api.models import BaseResponse
 from api.persistence import get_library_object
 from typing import List, Optional
-from stackdb.models import ChunkUpdate
+from stackdb.models import ChunkUpdate, Chunk
 from fastapi import HTTPException, status
 
 router = APIRouter(prefix="/libraries/{library_id}/chunks")
 
 
 @router.post("")
-def create_chunks(library_id: str, chunks: List[ChunkCreate]):
+def create_chunks(library_id: str, chunks: List[Chunk]):
     library = get_library_object(library_id)
     library.add_chunks(chunks)
     return BaseResponse(

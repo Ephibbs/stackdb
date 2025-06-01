@@ -46,14 +46,6 @@ class DocumentResponse(BaseModel):
 
 
 # Chunk endpoints
-class ChunkCreate(BaseModel):
-    id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()))
-    text: str = Field(min_length=1)
-    embedding: List[float] = Field()
-    metadata: Optional[Dict] = Field(default_factory=dict)
-    document_id: Optional[str] = Field(None)
-
-
 class PartialChunkResponse(BaseModel):
     id: Optional[str] = Field(None)
     text: Optional[str] = Field(None)

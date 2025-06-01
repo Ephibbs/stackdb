@@ -164,7 +164,7 @@ class TestLSHIndexPerformance:
             "LSHIndex_20_tables",
             chunks,
             queries,
-            num_tables=20,
+            num_tables=50,
             hash_size=8,
         )
 

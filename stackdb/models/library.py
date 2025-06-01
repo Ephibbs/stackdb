@@ -179,8 +179,14 @@ class Library(BaseModel):
             if document.id in self.documents:
                 raise ValueError(f"Document {document.id} already exists")
 
+        all_chunks = []
         for document in documents:
             self.documents[document.id] = document
+            document.library_id = self.id
+            if hasattr(document, "chunks"):
+                all_chunks.extend(document.chunks.values())
+        if all_chunks:
+            self.index.add_vectors(all_chunks)
 
     @persistence_logger("remove_documents")
     def remove_documents(self, document_ids: List[str]):
@@ -205,13 +211,13 @@ class Library(BaseModel):
         ]
 
     @persistence_logger("update_document")
-    def update_document(self, document_id: str, update_data: DocumentUpdate):
-        self._update_document_internal(document_id, update_data)
+    def update_document(self, update_data: DocumentUpdate):
+        self._update_document_internal(update_data)
 
-    def _update_document_internal(self, document_id: str, update_data: DocumentUpdate):
-        if document_id not in self.documents:
-            raise ValueError(f"Document {document_id} not found")
-        document = self.documents[document_id]
+    def _update_document_internal(self, update_data: DocumentUpdate):
+        if update_data.id not in self.documents:
+            raise ValueError(f"Document {update_data.id} not found")
+        document = self.documents[update_data.id]
         document.update(**update_data.model_dump())
 
     """

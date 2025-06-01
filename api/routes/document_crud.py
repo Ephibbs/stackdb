@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query
 from api.models import DocumentCreate, BaseResponse
-from api.helpers import get_document_response
+from api.helpers import get_document_response, convert_document_create_to_document
 from api.persistence import get_library_object
 from typing import List, Optional
 from stackdb.models import DocumentUpdate
@@ -11,7 +11,8 @@ router = APIRouter(prefix="/libraries/{library_id}/documents")
 @router.post("")
 def create_documents(library_id: str, documents: List[DocumentCreate]):
     library = get_library_object(library_id)
-    library.add_documents(documents)
+    converted_documents = convert_document_create_to_document(documents, library_id)
+    library.add_documents(converted_documents)
     return BaseResponse(
         id=library_id,
         success=True,
@@ -46,7 +47,8 @@ def get_document(library_id: str, document_id: str):
 @router.patch("/{document_id}")
 def update_document(library_id: str, document_id: str, update_data: DocumentUpdate):
     library = get_library_object(library_id)
-    library.update_document(document_id, update_data)
+    update_data.id = document_id
+    library.update_document(update_data)
     return BaseResponse(
         id=document_id,
         success=True,

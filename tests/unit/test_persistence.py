@@ -215,8 +215,8 @@ class TestPersistenceLifecycle:
         original_library.persistence_manager.close()
         original_library.persistence_manager = None
 
-        restored_library = Library(
-            name="Lifecycle Test", dimension=4, storage_path=storage_path
+        restored_library = Library.restore_from_persistence(
+            id=original_library.id, storage_path=storage_path
         )
 
         assert len(restored_library.documents) == original_doc_count

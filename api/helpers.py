@@ -4,12 +4,14 @@ from api.models import (
     SearchQuery,
     LibraryResponse,
     DocumentResponse,
+    DocumentCreate,
 )
-from stackdb.models import Library, Document
+from stackdb.models import Library, Document, Chunk, ChunkUpdate
 from typing import List, Dict
 from stackdb.indexes import get_index
-from api.models import LibraryCreate
+from api.models import LibraryCreate, DocumentCreate
 from pathlib import Path
+from fastapi import HTTPException, status
 
 
 def create_library_object(library_data: LibraryCreate, storage_path: str) -> Library:
@@ -60,14 +62,27 @@ def get_document_response(document: Document) -> DocumentResponse:
     )
 
 
+def convert_document_create_to_document(
+    document_creates: List[DocumentCreate], library_id: str
+) -> List[Document]:
+    return [
+        Document(**document.model_dump(), library_id=library_id)
+        for document in document_creates
+    ]
+
+
 def get_search_results(
     library: Library, search_query: SearchQuery
 ) -> List[SearchResult]:
-    search_results = library.search_chunks(
-        query=search_query.query,
-        k=search_query.k,
-        filter=search_query.filter,
-    )
+    try:
+        search_results = library.search_chunks(
+            query=search_query.query,
+            k=search_query.k,
+            filter=search_query.filter,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
     results = []
     for chunk, distance in search_results:
         if search_query.fields:

@@ -1,5 +1,5 @@
 import pytest
-from stackdb import Library, Document, Chunk
+from stackdb import Library, Document, Chunk, DocumentUpdate
 from pydantic import ValidationError
 
 
@@ -161,7 +161,7 @@ class TestLibrary:
         library.add_documents(sample_documents)
         doc_id = sample_documents[0].id
         library.update_document(
-            doc_id, title="Updated Title", metadata={"updated": True}
+            DocumentUpdate(id=doc_id, title="Updated Title", metadata={"updated": True})
         )
         updated_doc = library.documents[doc_id]
         assert updated_doc.title == "Updated Title"
