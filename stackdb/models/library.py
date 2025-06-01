@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Dict, Optional, Any, Tuple, Callable
 import uuid
 from datetime import datetime
-from stackdb.models.document import Document, DocumentCreate
+from stackdb.models.document import Document, DocumentUpdate
 from stackdb.models.chunk import Chunk, ChunkUpdate
 from stackdb.filter import ChunkFilter
 from stackdb.indexes import BaseIndex, FlatIndex, get_index
@@ -35,6 +35,10 @@ def persistence_logger(operation: str) -> Callable:
 
     return decorator
 
+class LibraryUpdate(BaseModel):
+    id: str = Field(min_length=1)
+    name: Optional[str] = Field(None, min_length=1)
+    metadata: Optional[Dict] = Field(None)
 
 class Library(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -56,8 +60,13 @@ class Library(BaseModel):
 
         if self.storage_path:
             self.persistence_manager = PersistenceManager(self.storage_path)
-            self._restore_from_persistence()
             self.persistence_manager.set_snapshot_callback(self._to_snapshot_data)
+
+    @classmethod
+    def restore_from_persistence(cls, id: str, storage_path: str) -> "Library":
+        library = cls(id=id, storage_path=storage_path, name="temp", dimension=1)
+        library._restore_from_persistence()
+        return library
 
     def _restore_from_persistence(self) -> None:
         if not self.persistence_manager:
@@ -129,7 +138,7 @@ class Library(BaseModel):
             elif operation == "update_chunks":
                 self._update_chunks_internal(data["chunk_ids"], data["update_data"])
             elif operation == "update":
-                self._update_internal(**data)
+                self._update_internal(LibraryUpdate(**data))
             else:
                 raise ValueError(f"Unknown operation: {operation}")
         except Exception as e:
@@ -168,12 +177,8 @@ class Library(BaseModel):
             if document.id in self.documents:
                 raise ValueError(f"Document {document.id} already exists")
 
-        new_chunks = []
         for document in documents:
             self.documents[document.id] = document
-            new_chunks.extend(document.chunks.values())
-
-        self.index.add_vectors(new_chunks)
 
     @persistence_logger("remove_documents")
     def remove_documents(self, document_ids: List[str]):
@@ -198,14 +203,14 @@ class Library(BaseModel):
         ]
 
     @persistence_logger("update_document")
-    def update_document(self, document_id: str, **kwargs: Any):
-        self._update_document_internal(document_id, **kwargs)
+    def update_document(self, document_id: str, update_data: DocumentUpdate):
+        self._update_document_internal(document_id, update_data)
 
-    def _update_document_internal(self, document_id: str, **kwargs: Any):
+    def _update_document_internal(self, document_id: str, update_data: DocumentUpdate):
         if document_id not in self.documents:
             raise ValueError(f"Document {document_id} not found")
         document = self.documents[document_id]
-        document.update(**kwargs)
+        document.update(**update_data.model_dump())
 
     """
     Chunk Methods
@@ -239,7 +244,9 @@ class Library(BaseModel):
                 del self.documents[document.id]
         self.index.remove_vectors(chunk_ids)
 
-    def get_chunks(self, filter: Optional[Dict] = None) -> List[Chunk]:
+    def get_chunks(self, id: Optional[str] = None, filter: Optional[Dict] = None) -> List[Chunk]:
+        if id is not None:
+            return [self.index.chunks.get(id, None)]
         if filter is None:
             return list(self.index.chunks.values())
         filterer = ChunkFilter(filter)
@@ -262,11 +269,11 @@ class Library(BaseModel):
             chunk.update(**chunk_update.model_dump())
 
     @persistence_logger("update")
-    def update(self, **kwargs: Any):
-        self._update_internal(kwargs)
+    def update(self, update_data: LibraryUpdate):
+        self._update_internal(update_data)
 
-    def _update_internal(self, kwargs: Dict[str, Any]):
-        for key, value in kwargs.items():
+    def _update_internal(self, update_data: LibraryUpdate):
+        for key, value in update_data.model_dump().items():
             if key == "index":
                 all_chunks = list(self.index.chunks.values())
                 del self.index

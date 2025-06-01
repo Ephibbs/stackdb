@@ -11,11 +11,10 @@ import uuid
 from .chunk import Chunk
 
 
-class DocumentCreate(BaseModel):
+class DocumentUpdate(BaseModel):
+    id: str = Field(min_length=1)
     title: Optional[str] = Field(None)
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
-    chunks: Optional[List[Chunk]] = Field(default_factory=list)
-
 
 class Document(BaseModel):
     id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()))
