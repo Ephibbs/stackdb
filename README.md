@@ -219,6 +219,7 @@ To promote modularity and extensibility, I added a BaseIndex class abstraction t
 Changes are saved to a buffered WAL in memory and synced to disk on an interval or when there are many changes. Snapshots are also saved periodically at a less frequent interval. This allows the db to restart and recover data on failures.
 I assign a durable variable a sequence id to link snapshots with WAL logs and recover using both.
 4. The API creates CRUD endpoints for each of the models.
+5. Synchronous endpoints to use threadpool instead of coroutines which offer little benefit in cpu intensive in memory tasks
 
 ### Limitations & Future Work
 
@@ -226,3 +227,4 @@ I assign a durable variable a sequence id to link snapshots with WAL logs and re
 2. Create a snapshot of the index itself to avoid rebuilding on startup
 3. Create an abstract class for DistanceMetric and use in all Index classes, add euclidean, cosine
 4. The WAL could push to a Kafka service for performance and data replication if extended to a cluster
+5. Add async to methods that interface with storage for persistence
