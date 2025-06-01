@@ -29,25 +29,11 @@ class LibraryResponse(BaseModel):
     created_at: str
 
 
-class LibraryUpdate(BaseModel):
-    id: str = Field(min_length=1)
-    name: Optional[str] = Field(None, min_length=1)
-    metadata: Optional[Dict] = Field(None)
-
-
 # Document endpoints
-class DocumentChunk(BaseModel):
-    id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()))
-    text: str = Field(min_length=1)
-    embedding: List[float] = Field()
-    metadata: Optional[Dict] = Field(default_factory=dict)
-
-
 class DocumentCreate(BaseModel):
     id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()))
     title: Optional[str] = Field(None, min_length=1)
     metadata: Optional[Dict] = Field(default_factory=dict)
-    chunks: Optional[List[DocumentChunk]] = Field(default_factory=list)
 
 
 class DocumentResponse(BaseModel):
@@ -57,13 +43,6 @@ class DocumentResponse(BaseModel):
     library_id: str
     chunk_count: int
     created_at: str
-
-
-class DocumentUpdate(BaseModel):
-    id: str = Field(min_length=1)
-    title: Optional[str] = Field(None, min_length=1)
-    metadata: Optional[Dict] = Field(None)
-
 
 # Chunk endpoints
 class ChunkCreate(BaseModel):
@@ -81,13 +60,6 @@ class PartialChunkResponse(BaseModel):
     metadata: Optional[Dict] = Field(None)
     document_id: Optional[str] = Field(None)
     created_at: Optional[datetime] = Field(None)
-
-
-class ChunkUpdate(BaseModel):
-    id: str = Field(min_length=1)
-    text: Optional[str] = Field(None, min_length=1)
-    metadata: Optional[Dict] = Field(None)
-
 
 # Search types
 class SearchQuery(BaseModel):
