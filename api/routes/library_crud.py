@@ -6,7 +6,7 @@ from api.persistence import save_libraries, libraries, storage_path, get_library
 router = APIRouter(prefix="/libraries")
 
 @router.post("")
-async def create_library(library_data: LibraryCreate):
+def create_library(library_data: LibraryCreate):
     library = create_library_object(library_data, storage_path)
 
     libraries[library.id] = library
@@ -21,16 +21,16 @@ async def create_library(library_data: LibraryCreate):
     )
 
 @router.get("")
-async def list_libraries():
+def list_libraries():
     return get_library_responses(libraries)
 
 @router.get("/{library_id}")
-async def get_library(library_id: str):
+def get_library(library_id: str):
     library = get_library_object(library_id)
     return get_library_response(library)
 
 @router.patch("/{library_id}")
-async def update_library(library_id: str, update_data: LibraryUpdate):
+def update_library(library_id: str, update_data: LibraryUpdate):
     library = get_library_object(library_id)
 
     library.update(update_data)
@@ -42,7 +42,7 @@ async def update_library(library_id: str, update_data: LibraryUpdate):
     )
 
 @router.delete("/{library_id}")
-async def delete_library(library_id: str):
+def delete_library(library_id: str):
     if library_id not in libraries:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Library not found")
     del libraries[library_id]

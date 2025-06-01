@@ -35,7 +35,7 @@ app.include_router(document_crud.router)
 app.include_router(chunk_crud.router)
 
 @app.post("/libraries/{library_id}/search", response_model=List[SearchResult])
-async def search_library(library_id: str, search_query: SearchQuery):
+def search_library(library_id: str, search_query: SearchQuery):
     library = get_library_object(library_id)
     results = get_search_results(library, search_query)
     return results

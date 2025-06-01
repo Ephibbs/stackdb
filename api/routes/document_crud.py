@@ -8,7 +8,7 @@ from stackdb.models import DocumentUpdate
 router = APIRouter(prefix="/libraries/{library_id}/documents")
 
 @router.post("")
-async def create_documents(library_id: str, documents: List[DocumentCreate]):
+def create_documents(library_id: str, documents: List[DocumentCreate]):
     library = get_library_object(library_id)
     library.add_documents(documents)
     return BaseResponse(
@@ -18,7 +18,7 @@ async def create_documents(library_id: str, documents: List[DocumentCreate]):
     )
 
 @router.get("")
-async def list_documents(
+def list_documents(
     library_id: str,
     document_ids: Optional[List[str]] = Query(None),
     skip: int = Query(0, ge=0),
@@ -36,13 +36,13 @@ async def list_documents(
     return results
 
 @router.get("/{document_id}")
-async def get_document(library_id: str, document_id: str):
+def get_document(library_id: str, document_id: str):
     library = get_library_object(library_id)
     document = library.get_documents([document_id])[0]
     return get_document_response(document)
 
 @router.patch("/{document_id}")
-async def update_document(
+def update_document(
     library_id: str, document_id: str, update_data: DocumentUpdate
 ):
     library = get_library_object(library_id)
@@ -54,7 +54,7 @@ async def update_document(
     )
 
 @router.delete("/{document_id}")
-async def delete_document(library_id: str, document_id: str):
+def delete_document(library_id: str, document_id: str):
     library = get_library_object(library_id)
     library.remove_document(document_id)
     return BaseResponse(
