@@ -12,7 +12,7 @@ from stackdb.models.document import Document, DocumentUpdate
 from stackdb.models.chunk import Chunk, ChunkUpdate
 from stackdb.filter import ChunkFilter
 from stackdb.indexes import BaseIndex, FlatIndex, get_index
-from stackdb.lock import library_write_lock
+from stackdb.lock import library_write_lock, library_read_lock
 from stackdb.persistence import PersistenceManager
 import functools
 
@@ -252,6 +252,7 @@ class Library(BaseModel):
                 del self.documents[document.id]
         self.index.remove_vectors(chunk_ids)
 
+    @library_read_lock
     def get_chunks(
         self, id: Optional[str] = None, filter: Optional[Dict] = None
     ) -> List[Chunk]:
@@ -262,6 +263,7 @@ class Library(BaseModel):
         filterer = ChunkFilter(filter)
         return filterer.filter_chunks(self.index.chunks.values())
 
+    @library_read_lock
     def search_chunks(
         self, query: List[float], k: int, filter: Optional[Dict] = None, **kwargs: Any
     ) -> List[Tuple[str, float]]:

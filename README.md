@@ -222,3 +222,4 @@ I assign a durable variable a sequence id to link snapshots with WAL logs and re
 3. Create an abstract class for DistanceMetric and use in all Index classes, add euclidean, cosine
 4. The WAL could push to a Kafka service for performance and data replication if extended to a cluster
 5. Add async to methods that interface with storage for persistence
+6. Ensure writes don't block reads; currently we lock 
