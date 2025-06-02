@@ -15,14 +15,17 @@ _create_library_lock = threading.Lock()
 class ReadWriteLock:
     def __init__(self):
         self._read_count = 0
+        self._writer_waiting = 0
         self._read_count_lock = threading.Lock()
         self._write_lock = threading.Lock()
+        self._reader_entry_lock = threading.Lock()
 
     def acquire_read(self):
-        with self._read_count_lock:
-            self._read_count += 1
-            if self._read_count == 1:
-                self._write_lock.acquire()
+        with self._reader_entry_lock:
+            with self._read_count_lock:
+                self._read_count += 1
+                if self._read_count == 1:
+                    self._write_lock.acquire()
 
     def release_read(self):
         with self._read_count_lock:
@@ -31,10 +34,16 @@ class ReadWriteLock:
                 self._write_lock.release()
 
     def acquire_write(self):
+        with self._read_count_lock:
+            self._writer_waiting += 1
+        self._reader_entry_lock.acquire()
         self._write_lock.acquire()
 
     def release_write(self):
         self._write_lock.release()
+        with self._read_count_lock:
+            self._writer_waiting -= 1
+        self._reader_entry_lock.release()
 
 
 def _get_lock(library_id: str) -> ReadWriteLock:
